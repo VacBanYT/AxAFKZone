@@ -1,0 +1,9 @@
+name: AxAFKZone
+version: '${project.version}'
+main: com.artillexstudios.axafkzone.AxAFKZone
+api-version: '1.18'
+folia-supported: true
+
+permissions:
+  axafkzone.admin:
+    default: op

@@ -1,0 +1,36 @@
+messages:
+  entered: "&#FF8855You have entered the AFK zone! You will get a reward in &#CC0055%time%&#FF8855!"
+  left: "&#FF8855You have left the AFK zone! You stayed here for &#CC0055%time%&#FF8855!"
+  # the %rewards% line will be duplicated for every reward given
+  reward:
+    - "&#FF8855You have waited for &#CC0055%time% &#FF8855and you have been rewarded:"
+    - "&7 - &f%reward%"
+
+# set any of the lines to "" if you want to disable one of them
+in-zone:
+  title: "&#CC0055⌚ &7| &#FF8855ʏᴏᴜ ᴀʀᴇ ᴀғᴋ &7| &#CC0055⌚"
+  subtitle: "&#FFBB00Next reward in: &#CC0055%time%"
+  actionbar: ""
+
+# how often should a reward be rolled? (in seconds)
+reward-time-seconds: 60
+
+# how many rewards should be rolled after the time has passed?
+roll-amount: 3
+
+# chances can go over 100%
+# you can add as many rewards as you would like
+rewards:
+  - chance: 50.0
+    display: "&#AAAAAA1x Iron Ingot"
+    commands:
+      - "give %player% iron_ingot 1"
+  - chance: 25.0
+    display: "&#88FFFF1x Diamond"
+    items:
+      - amount: 1
+        material: diamond
+
+zone:
+  location1: "IF YOU SEE THIS, SOMETHING HAS GONE REALLY REALLY WRONG"
+  location2: "YOU SHOULD PROBABLY CONTACT SUPPORT, UNLESS YOU ARE LOOKING IN THE DEFAULT FILE!"
