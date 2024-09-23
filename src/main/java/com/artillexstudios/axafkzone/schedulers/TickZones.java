@@ -5,16 +5,17 @@ import com.artillexstudios.axafkzone.zones.Zone;
 import com.artillexstudios.axafkzone.zones.Zones;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class TickZones {
-    private static ScheduledFuture<?> future = null;
+    private static ScheduledExecutorService service = null;
 
     public static void start() {
-        if (future != null) future.cancel(true);
+        if (service != null) service.shutdown();
 
-        future = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+        service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(() -> {
             try {
                 for (Zone zone : Zones.getZones().values()) {
                     zone.tick();
@@ -30,7 +31,7 @@ public class TickZones {
     }
 
     public static void stop() {
-        if (future == null) return;
-        future.cancel(true);
+        if (service == null) return;
+        service.shutdown();
     }
 }

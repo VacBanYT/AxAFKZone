@@ -28,7 +28,9 @@ public class Region {
     public HashSet<Player> getPlayersInZone() {
         final HashSet<Player> players = new HashSet<>();
 
+        String permission = zone.getSettings().getString("permission");
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!permission.isBlank() && !player.hasPermission(permission)) continue;
             if (!player.getWorld().equals(world)) continue;
 
             final Location loc = player.getLocation();

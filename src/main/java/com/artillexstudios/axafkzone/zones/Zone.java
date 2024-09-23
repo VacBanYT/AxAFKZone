@@ -47,7 +47,6 @@ public class Zone {
     }
 
     public void tick() {
-        // todo: send titles
         boolean runChecks = ++ticks % 20 == 0;
 
         final HashSet<Player> players = region.getPlayersInZone();

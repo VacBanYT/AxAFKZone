@@ -12,6 +12,11 @@ in-zone:
   subtitle: "&#FFBB00Next reward in: &#CC0055%time%"
   actionbar: ""
 
+# the required permission to gain rewards in this zone
+# example: axafkzone.vip
+# set to "" to disable, so everyone will get rewards
+permission: ""
+
 # how often should a reward be rolled? (in seconds)
 reward-time-seconds: 60
 
