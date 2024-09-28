@@ -59,7 +59,7 @@ public final class AxAFKZone extends AxPlugin {
 
         getServer().getPluginManager().registerEvents(new WandListeners(), this);
 
-//        if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier(this, );
+        if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier(this, 6598);
     }
 
     public void disable() {

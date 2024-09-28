@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios</groupId>
     <artifactId>AxAFKZone</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>AxAFKZone</name>
@@ -67,10 +67,6 @@
                                     <pattern>revxrsal.commands</pattern>
                                     <shadedPattern>com.artillexstudios.axafkzone.libs.lamp</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>com.artillexstudios.axafkzone.libs.hikari</shadedPattern>
-                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -118,7 +114,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.292</version>
+            <version>1.4.379</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
