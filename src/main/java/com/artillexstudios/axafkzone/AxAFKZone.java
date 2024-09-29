@@ -21,7 +21,6 @@ import org.bstats.bukkit.Metrics;
 import java.io.File;
 
 public final class AxAFKZone extends AxPlugin {
-
     public static Config CONFIG;
     public static Config LANG;
     public static MessageUtils MESSAGEUTILS;
