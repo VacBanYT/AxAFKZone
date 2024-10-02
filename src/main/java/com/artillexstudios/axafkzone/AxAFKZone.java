@@ -1,6 +1,7 @@
 package com.artillexstudios.axafkzone;
 
 import com.artillexstudios.axafkzone.commands.Commands;
+import com.artillexstudios.axafkzone.libraries.Libraries;
 import com.artillexstudios.axafkzone.listeners.WandListeners;
 import com.artillexstudios.axafkzone.schedulers.TickZones;
 import com.artillexstudios.axafkzone.utils.FileUtils;
@@ -14,6 +15,7 @@ import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.Du
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.general.GeneralSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.loader.LoaderSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.UpdaterSettings;
+import com.artillexstudios.axapi.libs.libby.BukkitLibraryManager;
 import com.artillexstudios.axapi.utils.FeatureFlags;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -35,6 +37,17 @@ public final class AxAFKZone extends AxPlugin {
 
     public static AxPlugin getInstance() {
         return instance;
+    }
+
+    public void load() {
+        instance = this;
+        BukkitLibraryManager libraryManager = new BukkitLibraryManager(this, "lib");
+        libraryManager.addMavenCentral();
+        libraryManager.addJitPack();
+
+        for (Libraries lib : Libraries.values()) {
+            libraryManager.loadLibrary(lib.getLibrary());
+        }
     }
 
     public void enable() {
