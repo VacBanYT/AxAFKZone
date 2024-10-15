@@ -17,11 +17,12 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.artillexstudios.axafkzone.AxAFKZone.CONFIG;
 import static com.artillexstudios.axafkzone.AxAFKZone.MESSAGEUTILS;
@@ -31,7 +32,7 @@ public class Zone {
     private final Config settings;
     private Region region;
     private int ticks = 0;
-    private final HashMap<Player, Integer> zonePlayers = new HashMap<>();
+    private final ConcurrentHashMap<Player, Integer> zonePlayers = new ConcurrentHashMap<>();
     private final MessageUtils msg;
     private int rewardSeconds;
     private int rollAmount;
@@ -49,7 +50,7 @@ public class Zone {
     public void tick() {
         boolean runChecks = ++ticks % 20 == 0;
 
-        final HashSet<Player> players = region.getPlayersInZone();
+        final Set<Player> players = region.getPlayersInZone();
         for (Player player : zonePlayers.keySet()) {
             if (player.isDead() || !player.isOnline()) {
                 Scheduler.get().run(t -> zonePlayers.remove(player));
