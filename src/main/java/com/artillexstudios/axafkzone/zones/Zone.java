@@ -17,12 +17,12 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.artillexstudios.axafkzone.AxAFKZone.CONFIG;
 import static com.artillexstudios.axafkzone.AxAFKZone.MESSAGEUTILS;
@@ -190,8 +190,5 @@ public class Zone {
 
     public int getTicks() {
         return ticks;
-    }
-
-    public void delete() {
     }
 }

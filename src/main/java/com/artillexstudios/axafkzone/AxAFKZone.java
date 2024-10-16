@@ -40,7 +40,6 @@ public final class AxAFKZone extends AxPlugin {
     }
 
     public void load() {
-        instance = this;
         BukkitLibraryManager libraryManager = new BukkitLibraryManager(this, "lib");
         libraryManager.addMavenCentral();
         libraryManager.addJitPack();

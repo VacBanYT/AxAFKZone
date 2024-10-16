@@ -24,7 +24,6 @@ public class Zones {
     }
 
     public static void removeZone(@NotNull Zone zone) {
-        zone.delete();
         zones.remove(zone.getName());
     }
 }

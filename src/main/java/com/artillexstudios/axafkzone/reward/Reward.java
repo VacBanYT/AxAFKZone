@@ -32,8 +32,7 @@ public class Reward {
         }
 
         String display = null;
-        if (str.containsKey("display"))
-            display = (String) str.get("display");
+        if (str.containsKey("display")) display = (String) str.get("display");
 
         this.chance = chance;
         this.items = items;
@@ -68,10 +67,6 @@ public class Reward {
 
     @Override
     public String toString() {
-        return "Reward{" +
-                "commands=" + commands +
-                ", items=" + items +
-                ", chance=" + chance +
-                '}';
+        return "Reward{" + "commands=" + commands + ", items=" + items + ", chance=" + chance + '}';
     }
 }

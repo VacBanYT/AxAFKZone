@@ -46,7 +46,6 @@ public class FileUtils {
     }
 
     public static void delete(Zone zone) {
-        zone.delete();
         new File(AxAFKZone.getInstance().getDataFolder(), "zones/" + zone.getName() + ".yml").delete();
         Zones.removeZone(zone);
     }
