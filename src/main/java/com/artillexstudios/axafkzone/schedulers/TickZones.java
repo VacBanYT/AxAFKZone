@@ -4,6 +4,8 @@ import com.artillexstudios.axafkzone.listeners.WandListeners;
 import com.artillexstudios.axafkzone.zones.Zone;
 import com.artillexstudios.axafkzone.zones.Zones;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +19,8 @@ public class TickZones {
         service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(() -> {
             try {
-                for (Zone zone : Zones.getZones().values()) {
+                List<Zone> zonesSnapshot = new ArrayList<>(Zones.getZones().values());
+                for (Zone zone : zonesSnapshot) {
                     zone.tick();
                 }
 
