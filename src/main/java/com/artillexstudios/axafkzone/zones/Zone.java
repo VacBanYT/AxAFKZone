@@ -6,7 +6,6 @@ import com.artillexstudios.axafkzone.utils.RandomUtils;
 import com.artillexstudios.axafkzone.utils.TimeUtils;
 import com.artillexstudios.axapi.config.Config;
 import com.artillexstudios.axapi.nms.NMSHandlers;
-import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.ActionBar;
 import com.artillexstudios.axapi.utils.Cooldown;
@@ -18,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,16 +51,18 @@ public class Zone {
         boolean runChecks = ++ticks % 20 == 0;
 
         final Set<Player> players = region.getPlayersInZone();
-        for (Player player : zonePlayers.keySet()) {
-            if (player.isDead() || !player.isOnline()) {
-                Scheduler.get().run(t -> zonePlayers.remove(player));
+        for (Iterator<Map.Entry<Player, Integer>> it = zonePlayers.entrySet().iterator(); it.hasNext(); ) {
+            Player player = it.next().getKey();
+            if (!player.isOnline()) {
+                it.remove();
+                players.remove(player);
                 continue;
             }
 
             // player left
             if (!players.contains(player)) {
                 msg.sendLang(player, "messages.left", Map.of("%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L)));
-                Scheduler.get().run(t -> zonePlayers.remove(player));
+                it.remove();
                 continue;
             }
 
