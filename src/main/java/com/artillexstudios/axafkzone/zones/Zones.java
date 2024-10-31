@@ -4,12 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Zones {
-    private static final HashMap<String, Zone> zones = new HashMap<>();
+    private static final ConcurrentHashMap<String, Zone> zones = new ConcurrentHashMap<>();
 
     @NotNull
-    public static HashMap<String, Zone> getZones() {
+    public static ConcurrentHashMap<String, Zone> getZones() {
         return zones;
     }
 

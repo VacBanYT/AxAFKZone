@@ -107,13 +107,13 @@ public class Commands implements OrphanCommand {
     public void reload(@NotNull CommandSender sender) {
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#CC0055[AxAFKZone] &#FF8855Reloading configuration..."));
         if (!CONFIG.reload()) {
-            MESSAGEUTILS.sendFormatted(sender, "reload.failed", Map.of("%file%", "config.yml"));
+            MESSAGEUTILS.sendLang(sender, "reload.failed", Map.of("%file%", "config.yml"));
             return;
         }
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#CC0055╠ &#FF8855Reloaded &fconfig.yml&#FF8855!"));
 
         if (!LANG.reload()) {
-            MESSAGEUTILS.sendFormatted(sender, "reload.failed", Map.of("%file%", "lang.yml"));
+            MESSAGEUTILS.sendLang(sender, "reload.failed", Map.of("%file%", "lang.yml"));
             return;
         }
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#CC0055╠ &#FF8855Reloaded &flang.yml&#FF8855!"));
