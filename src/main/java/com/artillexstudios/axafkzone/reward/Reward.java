@@ -21,7 +21,7 @@ public class Reward {
     public Reward(Map<Object, Object> str) {
         final List<String> commands = (List<String>) str.getOrDefault("commands", new ArrayList<>());
         final ArrayList<ItemStack> items = new ArrayList<>();
-        double chance = (double) str.get("chance");
+        Number chance = (Number) str.get("chance");
 
         var map = (List<Map<Object, Object>>) str.get("items");
         if (map != null) {
@@ -34,7 +34,7 @@ public class Reward {
         String display = null;
         if (str.containsKey("display")) display = (String) str.get("display");
 
-        this.chance = chance;
+        this.chance = chance.doubleValue();
         this.items = items;
         this.commands = commands;
         this.display = display;
