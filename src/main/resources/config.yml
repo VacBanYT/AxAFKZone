@@ -6,7 +6,7 @@ prefix: "<gradient:#FF8800:#CC0055><b>AxAFKZone</b></gradient> &7» "
 timer-format: 1
 
 # you must define at least 1
-# reloading will add new commands, however a restart is recommended when editing this
+# requires a restart to update
 command-aliases:
   - "axafkzone"
   - "afkzone"

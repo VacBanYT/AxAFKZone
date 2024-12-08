@@ -118,8 +118,6 @@ public class Commands implements OrphanCommand {
         }
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#CC0055╠ &#FF8855Reloaded &flang.yml&#FF8855!"));
 
-        Commands.registerCommand();
-
         NumberUtils.reload();
         FileUtils.loadAll();
 
