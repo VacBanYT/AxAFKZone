@@ -57,7 +57,7 @@ public class Reward {
     }
 
     public void run(Player player) {
-        Scheduler.get().runAt(player.getLocation(), scheduledTask -> {
+        Scheduler.get().run(scheduledTask -> {
             for (String cmd : commands) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("%player%", player.getName()));
             }
