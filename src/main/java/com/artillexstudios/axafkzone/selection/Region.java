@@ -6,14 +6,16 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class Region {
     private final Location corner1;
     private final Location corner2;
     private final Location center;
-    private final World world;
+    private World world;
     private final Zone zone;
 
     public Region(Location corner1, Location corner2, @NotNull Zone zone) {
@@ -25,7 +27,8 @@ public class Region {
         this.center = new Location(corner1.getWorld(), (corner1.getBlockX() + corner2.getBlockX()) / 2D, (corner1.getBlockY() + corner2.getBlockY()) / 2D, (corner1.getBlockZ() + corner2.getBlockZ()) / 2D);
     }
 
-    public HashSet<Player> getPlayersInZone() {
+    public Set<Player> getPlayersInZone() {
+        if (world == null) return Set.of();
         final HashSet<Player> players = new HashSet<>();
 
         String permission = zone.getSettings().getString("permission");
@@ -78,8 +81,12 @@ public class Region {
         return center;
     }
 
-    @NotNull
+    @Nullable
     public World getWorld() {
         return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 }

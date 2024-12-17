@@ -43,7 +43,6 @@ public class Zone {
         this.name = name;
         this.settings = settings;
         this.msg = new MessageUtils(settings.getBackingDocument(), "prefix", CONFIG.getBackingDocument());
-        this.region = new Region(Serializers.LOCATION.deserialize(settings.getString("zone.location1")), Serializers.LOCATION.deserialize(settings.getString("zone.location2")), this);
         reload();
     }
 
@@ -158,6 +157,12 @@ public class Zone {
 
     public boolean reload() {
         if (!settings.reload()) return false;
+
+        this.region = new Region(
+                Serializers.LOCATION.deserialize(settings.getString("zone.location1")),
+                Serializers.LOCATION.deserialize(settings.getString("zone.location2")),
+                this
+        );
 
         this.rewardSeconds = settings.getInt("reward-time-seconds", 180);
         this.rollAmount = settings.getInt("roll-amount", 1);
