@@ -5,9 +5,11 @@ import com.artillexstudios.axafkzone.selection.Region;
 import com.artillexstudios.axafkzone.utils.RandomUtils;
 import com.artillexstudios.axafkzone.utils.TimeUtils;
 import com.artillexstudios.axapi.config.Config;
+import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.nms.NMSHandlers;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.ActionBar;
+import com.artillexstudios.axapi.utils.BossBar;
 import com.artillexstudios.axapi.utils.Cooldown;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
@@ -28,16 +30,17 @@ import static com.artillexstudios.axafkzone.AxAFKZone.CONFIG;
 import static com.artillexstudios.axafkzone.AxAFKZone.MESSAGEUTILS;
 
 public class Zone {
+    private final ConcurrentHashMap<Player, Integer> zonePlayers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Player, BossBar> bossbars = new ConcurrentHashMap<>();
+    private final LinkedList<Reward> rewards = new LinkedList<>();
+    private final Cooldown<Player> cooldown = new Cooldown<>();
+    private final MessageUtils msg;
     private final String name;
     private final Config settings;
     private Region region;
     private int ticks = 0;
-    private final ConcurrentHashMap<Player, Integer> zonePlayers = new ConcurrentHashMap<>();
-    private final MessageUtils msg;
     private int rewardSeconds;
     private int rollAmount;
-    private final LinkedList<Reward> rewards = new LinkedList<>();
-    private final Cooldown<Player> cooldown = new Cooldown<>();
 
     public Zone(String name, Config settings) {
         this.name = name;
@@ -53,15 +56,14 @@ public class Zone {
         for (Iterator<Map.Entry<Player, Integer>> it = zonePlayers.entrySet().iterator(); it.hasNext(); ) {
             Player player = it.next().getKey();
             if (!player.isOnline()) {
-                it.remove();
                 players.remove(player);
+                leave(player, it);
                 continue;
             }
 
             // player left
             if (!players.contains(player)) {
-                msg.sendLang(player, "messages.left", Map.of("%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L)));
-                it.remove();
+                leave(player, it);
                 continue;
             }
 
@@ -70,52 +72,15 @@ public class Zone {
                 zonePlayers.put(player, newTime);
 
                 if (newTime != 0 && newTime % rewardSeconds == 0) {
-                    final List<Reward> rewardList = giveRewards(player);
-
-                    if (!settings.getStringList("messages.reward").isEmpty()) {
-                        final String prefix = CONFIG.getString("prefix");
-                        boolean first = true;
-                        for (String string : settings.getStringList("messages.reward")) {
-                            if (first) {
-                                string = prefix + string;
-                                first = false;
-                            }
-
-                            if (string.contains("%reward%")) {
-                                for (Reward reward : rewardList) {
-                                    player.sendMessage(StringUtils.formatToString(string, Map.of("%reward%", reward.getDisplay(), "%time%", TimeUtils.fancyTime(newTime * 1_000L))));
-                                }
-                                continue;
-                            }
-                            player.sendMessage(StringUtils.formatToString(string, Map.of("%time%", TimeUtils.fancyTime(newTime * 1_000L))));
-                        }
-                    }
-
+                    giveRewards(player, newTime);
                     if (CONFIG.getBoolean("reset-after-reward", false)) zonePlayers.put(player, 0);
                 }
             }
             players.remove(player);
 
-            String zoneTitle = settings.getString("in-zone.title", null);
-            String zoneSubTitle = settings.getString("in-zone.subtitle", null);
-            if (zoneTitle != null && !zoneTitle.isBlank() || zoneSubTitle != null && !zoneSubTitle.isBlank()) {
-                Title title = NMSHandlers.getNmsHandler()
-                        .newTitle(
-                                zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
-                                zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
-                                0,
-                                10,
-                                0
-                        );
-                title.send(player);
-            }
-
-            String zoneActionbar = settings.getString("in-zone.actionbar", null);
-            if (zoneActionbar != null && !zoneActionbar.isBlank()) {
-                ActionBar actionBar = NMSHandlers.getNmsHandler()
-                        .newActionBar(StringUtils.format(zoneActionbar.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
-                actionBar.send(player);
-            }
+            sendTitle(player);
+            sendActionbar(player);
+            updateBossbar(player);
         }
 
         int ipLimit = CONFIG.getInt("zone-per-ip-limit", -1);
@@ -127,8 +92,98 @@ public class Zone {
                 cooldown.addCooldown(player, 3_000L);
                 continue;
             }
-            msg.sendLang(player, "messages.entered", Map.of("%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L)));
-            zonePlayers.put(player, 0);
+            enter(player);
+        }
+    }
+
+    private void enter(Player player) {
+        BossBar bossBar = bossbars.remove(player);
+        if (bossBar != null) bossBar.remove();
+
+        msg.sendLang(player, "messages.entered", Map.of("%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L)));
+        zonePlayers.put(player, 0);
+
+        Section section;
+        if ((section = settings.getSection("in-zone.bossbar")) != null) {
+            bossBar = BossBar.create(
+                    StringUtils.format(section.getString("name").replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                    1,
+                    BossBar.Color.valueOf(section.getString("color").toUpperCase()),
+                    BossBar.Style.parse(section.getString("style"))
+            );
+            bossBar.show(player);
+            bossbars.put(player, bossBar);
+        }
+    }
+
+    private void leave(Player player, Iterator<Map.Entry<Player, Integer>> it) {
+        if (player.isOnline())
+            msg.sendLang(player, "messages.left", Map.of("%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L)));
+        it.remove();
+        BossBar bossBar = bossbars.remove(player);
+        if (bossBar != null) bossBar.remove();
+    }
+
+    private void sendTitle(Player player) {
+        String zoneTitle = settings.getString("in-zone.title", null);
+        String zoneSubTitle = settings.getString("in-zone.subtitle", null);
+        if (zoneTitle != null && !zoneTitle.isBlank() || zoneSubTitle != null && !zoneSubTitle.isBlank()) {
+            Title title = NMSHandlers.getNmsHandler()
+                    .newTitle(
+                            zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                            zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                            0,
+                            10,
+                            0
+                    );
+            title.send(player);
+        }
+    }
+
+    private void sendActionbar(Player player) {
+        String zoneActionbar = settings.getString("in-zone.actionbar", null);
+        if (zoneActionbar != null && !zoneActionbar.isBlank()) {
+            ActionBar actionBar = NMSHandlers.getNmsHandler()
+                    .newActionBar(StringUtils.format(zoneActionbar.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
+            actionBar.send(player);
+        }
+    }
+
+    private void updateBossbar(Player player) {
+        BossBar bossBar = bossbars.get(player);
+        if (bossBar == null) return;
+        Integer time = zonePlayers.get(player);
+        if (time == null) return;
+
+        int barDirection = CONFIG.getInt("bossbar-direction", 0);
+        float calculated = (float) (time % rewardSeconds) / (rewardSeconds - 1);
+        bossBar.setProgress(Math.max(0f, Math.min(1f, barDirection == 0 ? 1f - calculated : calculated)));
+
+        Section section;
+        if ((section = settings.getSection("in-zone.bossbar")) != null) {
+            bossBar.setTitle(StringUtils.format(section.getString("name").replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
+        }
+    }
+
+    private void giveRewards(Player player, int newTime) {
+        final List<Reward> rewardList = rollAndGiveRewards(player);
+        if (settings.getStringList("messages.reward").isEmpty()) return;
+
+        final String prefix = CONFIG.getString("prefix");
+        boolean first = true;
+        for (String string : settings.getStringList("messages.reward")) {
+            if (first) {
+                string = prefix + string;
+                first = false;
+            }
+
+            if (string.contains("%reward%")) {
+                for (Reward reward : rewardList) {
+                    player.sendMessage(StringUtils.formatToString(string, Map.of("%reward%", reward.getDisplay(), "%time%", TimeUtils.fancyTime(newTime * 1_000L))));
+                }
+                continue;
+            }
+            player.sendMessage(StringUtils.formatToString(string, Map.of("%time%", TimeUtils.fancyTime(newTime * 1_000L))));
         }
     }
 
@@ -138,7 +193,7 @@ public class Zone {
         return rewardSeconds * 1_000L - (time % rewardSeconds) * 1_000L;
     }
 
-    public List<Reward> giveRewards(Player player) {
+    public List<Reward> rollAndGiveRewards(Player player) {
         final List<Reward> rewardList = new ArrayList<>();
         if (rewards.isEmpty()) return rewardList;
         final HashMap<Reward, Double> chances = new HashMap<>();
@@ -174,6 +229,12 @@ public class Zone {
         }
 
         return true;
+    }
+
+    public void disable() {
+        for (BossBar bossBar : bossbars.values()) {
+            bossBar.remove();
+        }
     }
 
     public void setRegion(Region region) {

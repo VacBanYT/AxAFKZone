@@ -20,6 +20,12 @@ reset-after-reward: false
 # set to -1 for unlimited
 zone-per-ip-limit: -1
 
+# should the bossbar progress start from full or empty?
+# directions:
+# 0 - decreasing value (starts filled)
+# 1 - increasing value (starts empty)
+bossbar-direction: 0
+
 # should be plugin notify you if there is a new update?
 update-notifier:
   # if enabled, it will display the message in the console
@@ -28,4 +34,4 @@ update-notifier:
   on-join: true
 
 # do not change this
-version: 1
+version: 2

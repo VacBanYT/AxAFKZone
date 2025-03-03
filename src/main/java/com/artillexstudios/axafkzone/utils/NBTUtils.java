@@ -81,46 +81,32 @@ public class NBTUtils {
 
     @Nullable
     public static String readStringFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            final String str = wrappedItemStack.get(DataComponents.customData()).getString(namespace);
-            return str.isEmpty() ? null : str;
-        });
+        final String str = WrappedItemStack.wrap(item).get(DataComponents.customData()).getString(namespace);
+        return str.isEmpty() ? null : str;
     }
 
     public static int readIntegerFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            return wrappedItemStack.get(DataComponents.customData()).getInt(namespace);
-        });
+        return WrappedItemStack.wrap(item).get(DataComponents.customData()).getInt(namespace);
     }
 
     public static float readFloatFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            return wrappedItemStack.get(DataComponents.customData()).getFloat(namespace);
-        });
+        return WrappedItemStack.wrap(item).get(DataComponents.customData()).getFloat(namespace);
     }
 
     public static long readLongFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            return wrappedItemStack.get(DataComponents.customData()).getLong(namespace);
-        });
+        return WrappedItemStack.wrap(item).get(DataComponents.customData()).getLong(namespace);
     }
 
     public static double readDoubleFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            return wrappedItemStack.get(DataComponents.customData()).getDouble(namespace);
-        });
+        return WrappedItemStack.wrap(item).get(DataComponents.customData()).getDouble(namespace);
     }
 
     @Nullable
     public static UUID readUUIDFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            return wrappedItemStack.get(DataComponents.customData()).getUUID(namespace);
-        });
+        return WrappedItemStack.wrap(item).get(DataComponents.customData()).getUUID(namespace);
     }
 
     public static boolean readBooleanFromNBT(@NotNull ItemStack item, @NotNull String namespace) {
-        return WrappedItemStack.edit(item, wrappedItemStack -> {
-            return wrappedItemStack.get(DataComponents.customData()).getBoolean(namespace);
-        });
+        return WrappedItemStack.wrap(item).get(DataComponents.customData()).getBoolean(namespace);
     }
 }

@@ -8,21 +8,25 @@ import com.artillexstudios.axafkzone.schedulers.TickZones;
 import com.artillexstudios.axafkzone.utils.FileUtils;
 import com.artillexstudios.axafkzone.utils.NumberUtils;
 import com.artillexstudios.axafkzone.utils.UpdateNotifier;
+import com.artillexstudios.axafkzone.zones.Zone;
+import com.artillexstudios.axafkzone.zones.Zones;
 import com.artillexstudios.axapi.AxPlugin;
 import com.artillexstudios.axapi.config.Config;
-import com.artillexstudios.axapi.data.ThreadedQueue;
+import com.artillexstudios.axapi.executor.ThreadedQueue;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.dvs.versioning.BasicVersioning;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.DumperSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.general.GeneralSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.loader.LoaderSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.UpdaterSettings;
-import com.artillexstudios.axapi.libs.libby.BukkitLibraryManager;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
+import revxrsal.zapper.DependencyManager;
+import revxrsal.zapper.classloader.URLClassLoaderWrapper;
 
 import java.io.File;
+import java.net.URLClassLoader;
 
 public final class AxAFKZone extends AxPlugin {
     public static Config CONFIG;
@@ -41,13 +45,7 @@ public final class AxAFKZone extends AxPlugin {
     }
 
     public void load() {
-        BukkitLibraryManager libraryManager = new BukkitLibraryManager(this, "lib");
-        libraryManager.addMavenCentral();
-        libraryManager.addJitPack();
-
-        for (Libraries lib : Libraries.values()) {
-            libraryManager.loadLibrary(lib.getLibrary());
-        }
+        Libraries.load(new DependencyManager(getDescription(), new File(getDataFolder(), "lib"), URLClassLoaderWrapper.wrap((URLClassLoader) getClassLoader())));
     }
 
     public void enable() {
@@ -82,5 +80,8 @@ public final class AxAFKZone extends AxPlugin {
 
     public void disable() {
         TickZones.stop();
+        for (Zone zone : Zones.getZones().values()) {
+            zone.disable();
+        }
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -30,8 +31,10 @@ public class WandListeners implements Listener {
     public void onInteract(@NotNull PlayerInteractEvent event) {
         if (event.getClickedBlock() == null) return;
         if (event.getItem() == null || event.getItem().getType().equals(Material.AIR)) return;
-        if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) return;
-        if (!Boolean.TRUE.equals(NBTUtils.readBooleanFromNBT(event.getPlayer().getInventory().getItemInMainHand(), "axafkzone-wand"))) return;
+
+        ItemStack itemInHand = event.getPlayer().getInventory().getItemInMainHand();
+        if (itemInHand.getType().equals(Material.AIR)) return;
+        if (!NBTUtils.readBooleanFromNBT(itemInHand, "axafkzone-wand")) return;
         event.setCancelled(true);
 
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
@@ -42,7 +45,7 @@ public class WandListeners implements Listener {
     }
 
     private void onLeftClick(@NotNull Player player, @NotNull Location location) {
-        if (!selections.containsKey(player)) selections.put(player, new Selection());
+        if (!selections.containsKey(player)) selections.put(player, new Selection(player));
         if (Objects.equals(selections.get(player).getPosition1(), location)) return;
 
         player.setCooldown(player.getInventory().getItemInMainHand().getType(), 5);
@@ -51,7 +54,7 @@ public class WandListeners implements Listener {
     }
 
     private void onRightClick(@NotNull Player player, @NotNull Location location) {
-        if (!selections.containsKey(player)) selections.put(player, new Selection());
+        if (!selections.containsKey(player)) selections.put(player, new Selection(player));
         if (Objects.equals(selections.get(player).getPosition2(), location)) return;
 
         player.setCooldown(player.getInventory().getItemInMainHand().getType(), 5);

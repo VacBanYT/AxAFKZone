@@ -1,36 +1,44 @@
 package com.artillexstudios.axafkzone.libraries;
 
-import com.artillexstudios.axapi.libs.libby.Library;
-import com.artillexstudios.axapi.libs.libby.relocation.Relocation;
+import org.jetbrains.annotations.NotNull;
+import revxrsal.zapper.DependencyManager;
+import revxrsal.zapper.relocation.Relocation;
+import revxrsal.zapper.repository.Repository;
 
 public enum Libraries {
 
-    MATH3("org{}apache{}commons:commons-math3:3.6.1");
+    HIKARICP("org{}apache{}commons:commons-math3:3.6.1");
 
-    private final Library library;
+    private final String dependency;
+    private Relocation relocation;
 
-    public Library getLibrary() {
-        return this.library;
+    Libraries(String dependency) {
+        this.dependency = dependency.replace("{}", ".");
     }
 
-    Libraries(String lib, Relocation relocation) {
-        String[] split = lib.split(":");
-
-        library = Library.builder()
-                .groupId(split[0])
-                .artifactId(split[1])
-                .version(split[2])
-                .relocate(relocation)
-                .build();
+    Libraries(String dependency, @NotNull Relocation relocation) {
+        this(dependency);
+        this.relocation = relocation;
     }
 
-    Libraries(String lib) {
-        String[] split = lib.split(":");
+    public void load(Libraries lib, DependencyManager dependencyManager) {
+        dependencyManager.dependency(lib.dependency);
+        if (lib.relocation != null) dependencyManager.relocate(lib.relocation);
+    }
 
-        library = Library.builder()
-                .groupId(split[0])
-                .artifactId(split[1])
-                .version(split[2])
-                .build();
+    private static Relocation relocation(String from, String to) {
+        return new Relocation(from.replace("{}", "."), to);
+    }
+
+    public static void load(DependencyManager dependencyManager) {
+        dependencyManager.repository(Repository.mavenCentral());
+        dependencyManager.repository(Repository.jitpack());
+        dependencyManager.repository(Repository.paper());
+
+        for (Libraries lib : Libraries.values()) {
+            lib.load(lib, dependencyManager);
+        }
+
+        dependencyManager.load();
     }
 }

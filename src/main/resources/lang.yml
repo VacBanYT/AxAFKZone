@@ -42,6 +42,7 @@ selection:
   pos1: "&#FFBB00Selected &#CC0055POSITION #1 &7- &#DDDDDD%location%"
   pos2: "&#FFBB00Selected &#CC0055POSITION #2 &7- &#DDDDDD%location%"
   no-selection: "&#CC0055You must select 2 corners with /axafkzone wand to create a new zone!"
+  small-selection: "&#CC0055The zone selected only has a height of 1, make sure that you didn't just select the ground level!"
 
 commands:
   invalid-value: "&#FF0000Invalid parameter: &#BB0000%value%"
@@ -56,4 +57,4 @@ commands:
 update-notifier: "&#FFAA77There is a new version of AxAFKZone available! &#DDDDDD(&#FFFFFFcurrent: &#FF0000%current% &#DDDDDD| &#FFFFFFlatest: &#00FF00%latest%&#DDDDDD)"
 
 # do not change this
-version: 1
+version: 2

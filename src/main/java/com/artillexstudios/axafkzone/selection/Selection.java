@@ -1,6 +1,7 @@
 package com.artillexstudios.axafkzone.selection;
 
 import com.artillexstudios.axapi.collections.ThreadSafeList;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.selection.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -9,10 +10,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import static com.artillexstudios.axafkzone.AxAFKZone.MESSAGEUTILS;
+
 public class Selection {
+    private final Player player;
     private Location position1 = null;
     private Location position2 = null;
     private final ThreadSafeList<Location> borders = new ThreadSafeList<>();
+
+    public Selection(Player player) {
+        this.player = player;
+    }
 
     public Location getPosition1() {
         return position1;
@@ -20,7 +28,7 @@ public class Selection {
 
     public void setPosition1(@NotNull Location position1) {
         this.position1 = position1;
-        updateVisualizer();
+        update();
     }
 
     public Location getPosition2() {
@@ -29,7 +37,14 @@ public class Selection {
 
     public void setPosition2(@NotNull Location position2) {
         this.position2 = position2;
+        update();
+    }
+
+    private void update() {
         updateVisualizer();
+        if (position1 == null || position2 == null) return;
+        if (position1.getBlockY() != position2.getBlockY()) return;
+        Scheduler.get().run(() -> MESSAGEUTILS.sendLang(player, "selection.small-selection"));
     }
 
     public void show(@NotNull Player player) {

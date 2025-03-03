@@ -3,7 +3,6 @@ package com.artillexstudios.axafkzone.zones;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Zones {
@@ -26,5 +25,6 @@ public class Zones {
 
     public static void removeZone(@NotNull Zone zone) {
         zones.remove(zone.getName());
+        zone.disable();
     }
 }

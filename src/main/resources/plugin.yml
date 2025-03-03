@@ -1,7 +1,7 @@
 name: AxAFKZone
 version: '${project.version}'
 main: com.artillexstudios.axafkzone.AxAFKZone
-api-version: '1.18'
+api-version: '1.19'
 folia-supported: true
 
 permissions:
