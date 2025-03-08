@@ -86,12 +86,20 @@ public class Zone {
         int ipLimit = CONFIG.getInt("zone-per-ip-limit", -1);
         // player entered
         for (Player player : players) {
-            if (cooldown.hasCooldown(player)) continue;
-            if (ipLimit != -1 && zonePlayers.keySet().stream().filter(p1 -> p1.getAddress().getAddress() == player.getAddress().getAddress()).count() >= ipLimit) {
+            if (cooldown.hasCooldown(player)) {
+                continue;
+            }
+
+            long playerIpCount = zonePlayers.keySet().stream()
+                    .filter(p1 -> p1.getAddress().getAddress().equals(player.getAddress().getAddress()))
+                    .count();
+
+            if (ipLimit != -1 && playerIpCount >= ipLimit) {
                 MESSAGEUTILS.sendLang(player, "zone.ip-limit");
                 cooldown.addCooldown(player, 3_000L);
                 continue;
             }
+
             enter(player);
         }
     }
