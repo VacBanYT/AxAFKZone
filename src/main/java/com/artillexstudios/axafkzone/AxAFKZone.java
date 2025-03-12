@@ -18,6 +18,7 @@ import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.Du
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.general.GeneralSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.loader.LoaderSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.UpdaterSettings;
+import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -35,6 +36,7 @@ public final class AxAFKZone extends AxPlugin {
     private static AxPlugin instance;
     private static ThreadedQueue<Runnable> threadedQueue;
     public static BukkitAudiences BUKKITAUDIENCES;
+    private static AxMetrics metrics;
 
     public static ThreadedQueue<Runnable> getThreadedQueue() {
         return threadedQueue;
@@ -71,6 +73,9 @@ public final class AxAFKZone extends AxPlugin {
         getServer().getPluginManager().registerEvents(new WandListeners(), this);
         getServer().getPluginManager().registerEvents(new WorldListeners(), this);
 
+        metrics = new AxMetrics(this, 9);
+        metrics.start();
+
         if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier(this, 6598);
     }
 
@@ -79,6 +84,7 @@ public final class AxAFKZone extends AxPlugin {
     }
 
     public void disable() {
+        if (metrics != null) metrics.cancel();
         TickZones.stop();
         for (Zone zone : Zones.getZones().values()) {
             zone.disable();
