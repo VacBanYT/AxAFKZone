@@ -7,7 +7,7 @@ import revxrsal.zapper.repository.Repository;
 
 public enum Libraries {
 
-    HIKARICP("org{}apache{}commons:commons-math3:3.6.1");
+    APACHE_COMMONS("org{}apache{}commons:commons-math3:3.6.1");
 
     private final String dependency;
     private Relocation relocation;
