@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios</groupId>
     <artifactId>AxAFKZone</artifactId>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <name>AxAFKZone</name>
@@ -67,6 +67,10 @@
                                     <pattern>revxrsal.commands</pattern>
                                     <shadedPattern>com.artillexstudios.axafkzone.libs.lamp</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.math3</pattern>
+                                    <shadedPattern>com.artillexstudios.axafkzone.libs.axapi.libs.math3</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -108,13 +112,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.561</version>
+            <version>1.4.633</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>

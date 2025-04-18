@@ -1,7 +1,6 @@
 package com.artillexstudios.axafkzone;
 
 import com.artillexstudios.axafkzone.commands.Commands;
-import com.artillexstudios.axafkzone.libraries.Libraries;
 import com.artillexstudios.axafkzone.listeners.WandListeners;
 import com.artillexstudios.axafkzone.listeners.WorldListeners;
 import com.artillexstudios.axafkzone.schedulers.TickZones;
@@ -13,21 +12,18 @@ import com.artillexstudios.axafkzone.zones.Zones;
 import com.artillexstudios.axapi.AxPlugin;
 import com.artillexstudios.axapi.config.Config;
 import com.artillexstudios.axapi.executor.ThreadedQueue;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.dvs.versioning.BasicVersioning;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.DumperSettings;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.general.GeneralSettings;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.loader.LoaderSettings;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.UpdaterSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.dvs.versioning.BasicVersioning;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.dumper.DumperSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.general.GeneralSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.loader.LoaderSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettings;
 import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
-import revxrsal.zapper.DependencyManager;
-import revxrsal.zapper.classloader.URLClassLoaderWrapper;
 
 import java.io.File;
-import java.net.URLClassLoader;
 
 public final class AxAFKZone extends AxPlugin {
     public static Config CONFIG;
@@ -44,10 +40,6 @@ public final class AxAFKZone extends AxPlugin {
 
     public static AxPlugin getInstance() {
         return instance;
-    }
-
-    public void load() {
-        Libraries.load(new DependencyManager(getDescription(), new File(getDataFolder(), "lib"), URLClassLoaderWrapper.wrap((URLClassLoader) getClassLoader())));
     }
 
     public void enable() {

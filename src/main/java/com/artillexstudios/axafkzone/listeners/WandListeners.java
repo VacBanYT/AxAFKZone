@@ -1,7 +1,7 @@
 package com.artillexstudios.axafkzone.listeners;
 
 import com.artillexstudios.axafkzone.selection.Selection;
-import com.artillexstudios.axafkzone.utils.NBTUtils;
+import com.artillexstudios.axapi.items.NBTWrapper;
 import com.artillexstudios.axapi.serializers.Serializers;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,7 +34,9 @@ public class WandListeners implements Listener {
 
         ItemStack itemInHand = event.getPlayer().getInventory().getItemInMainHand();
         if (itemInHand.getType().equals(Material.AIR)) return;
-        if (!NBTUtils.readBooleanFromNBT(itemInHand, "axafkzone-wand")) return;
+
+        NBTWrapper wrapper = new NBTWrapper(itemInHand);
+        if (!wrapper.getBooleanOr("axafkzone-wand", false)) return;
         event.setCancelled(true);
 
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {

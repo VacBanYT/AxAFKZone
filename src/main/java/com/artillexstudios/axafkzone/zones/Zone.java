@@ -5,8 +5,7 @@ import com.artillexstudios.axafkzone.selection.Region;
 import com.artillexstudios.axafkzone.utils.RandomUtils;
 import com.artillexstudios.axafkzone.utils.TimeUtils;
 import com.artillexstudios.axapi.config.Config;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.implementation.Section;
-import com.artillexstudios.axapi.nms.NMSHandlers;
+import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.serializers.Serializers;
 import com.artillexstudios.axapi.utils.ActionBar;
 import com.artillexstudios.axapi.utils.BossBar;
@@ -129,14 +128,11 @@ public class Zone {
         String zoneTitle = settings.getString("in-zone.title", null);
         String zoneSubTitle = settings.getString("in-zone.subtitle", null);
         if (zoneTitle != null && !zoneTitle.isBlank() || zoneSubTitle != null && !zoneSubTitle.isBlank()) {
-            Title title = NMSHandlers.getNmsHandler()
-                    .newTitle(
-                            zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
-                            zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
-                            0,
-                            10,
-                            0
-                    );
+            Title title = Title.create(
+                    zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                    zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                    0, 10, 0
+            );
             title.send(player);
         }
     }
@@ -144,9 +140,7 @@ public class Zone {
     private void sendActionbar(Player player) {
         String zoneActionbar = settings.getString("in-zone.actionbar", null);
         if (zoneActionbar != null && !zoneActionbar.isBlank()) {
-            ActionBar actionBar = NMSHandlers.getNmsHandler()
-                    .newActionBar(StringUtils.format(zoneActionbar.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
-            actionBar.send(player);
+            ActionBar.send(player, StringUtils.format(zoneActionbar.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
         }
     }
 
@@ -158,11 +152,11 @@ public class Zone {
 
         int barDirection = CONFIG.getInt("bossbar-direction", 0);
         float calculated = (float) (time % rewardSeconds) / (rewardSeconds - 1);
-        bossBar.setProgress(Math.max(0f, Math.min(1f, barDirection == 0 ? 1f - calculated : calculated)));
+        bossBar.progress(Math.max(0f, Math.min(1f, barDirection == 0 ? 1f - calculated : calculated)));
 
         Section section;
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
-            bossBar.setTitle(StringUtils.format(section.getString("name").replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
+            bossBar.title(StringUtils.format(section.getString("name").replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
         }
     }
 
