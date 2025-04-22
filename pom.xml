@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios</groupId>
     <artifactId>AxAFKZone</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <packaging>jar</packaging>
 
     <name>AxAFKZone</name>
@@ -118,14 +118,8 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.635</version>
+            <version>1.4.657</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>net.kyori</artifactId>
-                    <groupId>*</groupId>
-                </exclusion>
-            </exclusions>
             <classifier>all</classifier>
         </dependency>
         <dependency>
