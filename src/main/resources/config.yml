@@ -3,7 +3,8 @@ prefix: "<gradient:#FF8800:#CC0055><b>AxAFKZone</b></gradient> &7» "
 # 1 - HH:MM:SS, for example 01:25:35
 # 2 - short format, for example 20m
 # 3 - text format, for example 01h 25m 35s
-timer-format: 1
+# 4 - percentage format
+timer-format: 2
 
 # you must define at least 1
 # requires a restart to update
@@ -14,7 +15,7 @@ command-aliases:
 
 # should the timer reset after a player gets their afk zone rewards?
 # this is just for the placeholders, it will not change functionality
-reset-after-reward: false
+reset-after-reward: true
 
 # how many players can gain rewards at once from a single ip?
 # set to -1 for unlimited
