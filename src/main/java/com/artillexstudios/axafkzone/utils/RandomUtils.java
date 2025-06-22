@@ -18,4 +18,14 @@ public class RandomUtils {
 
         return e.sample();
     }
+
+    /**
+     * Returns whether a roll is successful based on the supplied percentage.
+     *
+     * @param chance chance from 0-100
+     * @return true if the random roll succeeds
+     */
+    public static boolean getChance(double chance) {
+        return Math.random() * 100 < chance;
+    }
 }

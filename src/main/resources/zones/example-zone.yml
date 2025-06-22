@@ -8,16 +8,14 @@ messages:
 
 # set any of the lines to "" if you want to disable one of them
 in-zone:
-  title: "&#CC0055⌚ &7| &#FF8855ʏᴏᴜ ᴀʀᴇ ᴀғᴋ &7| &#CC0055⌚"
-  subtitle: "&#FFBB00Next reward in: &#CC0055%time%"
-  actionbar: ""
+  title: '&8⋆ &#279EFF&lꜱ&#2BABFF&lᴛ&#2EB8FF&lʀ&#32C5FF&lᴇ&#35D2FF&lꜰ&#39DFFF&lᴀ &#30BFFF&lᴀ&#2CAEFF&lꜰ&#279EFF&lᴋ&8 ⋆'
+  subtitle: '&fPostęp: &8(&#55ffff%time-percent%&8)'
+  actionbar: ''
   # remove the section to disable
   bossbar:
-    name: "&#CC0055⌚ &7| &#FF8855ʏᴏᴜ ᴀʀᴇ ᴀғᴋ &7| &#FFBB00Next reward in: &#CC0055%time%"
-    # colors: https://javadoc.io/static/net.kyori/adventure-api/4.17.0/net/kyori/adventure/bossbar/BossBar.Color.html
-    color: RED
-    # styles: https://javadoc.io/static/net.kyori/adventure-api/4.17.0/net/kyori/adventure/bossbar/BossBar.Overlay.html
-    style: NOTCHED_20
+    name: '&fdostaniesz za: &#55ffff%time% &8(&#55ffff%time-percent%&8) &8| &fSzansa: &#55ffff%chance%'
+    color: BLUE
+    style: PROGRESS
 
 # the required permission to gain rewards in this zone
 # example: axafkzone.vip
@@ -28,7 +26,7 @@ permission: ""
 reward-time-seconds: 60
 
 # how many rewards should be rolled after the time has passed?
-roll-amount: 3
+roll-amount: 1
 
 # chances can go over 100%
 # you can add as many rewards as you would like
@@ -42,6 +40,14 @@ rewards:
     items:
       - amount: 1
         material: diamond
+
+bonus-permissions:
+  afkzone-bonus-5: 5.0
+  afkzone-bonus-10: 10.0
+  afkzone-bonus-20: 20.0
+  afkzone-bonus-30: 30.0
+  afkzone-bonus-40: 40.0
+  afkzone-bonus-50: 50.0
 
 zone:
   location1: "IF YOU SEE THIS, SOMETHING HAS GONE REALLY REALLY WRONG"

@@ -17,7 +17,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +32,7 @@ public class Zone {
     private final ConcurrentHashMap<Player, BossBar> bossbars = new ConcurrentHashMap<>();
     private final LinkedList<Reward> rewards = new LinkedList<>();
     private final Cooldown<Player> cooldown = new Cooldown<>();
+    private final ConcurrentHashMap<Player, Double> bonusCache = new ConcurrentHashMap<>();
     private final MessageUtils msg;
     private final String name;
     private final Config settings;
@@ -71,7 +71,7 @@ public class Zone {
                 zonePlayers.put(player, newTime);
 
                 if (newTime != 0 && newTime % rewardSeconds == 0) {
-                    giveRewards(player, newTime);
+                    handleRewards(player, newTime);
                     if (CONFIG.getBoolean("reset-after-reward", false)) zonePlayers.put(player, 0);
                 }
             }
@@ -100,13 +100,22 @@ public class Zone {
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
 
-        msg.sendLang(player, "messages.entered", Map.of("%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L)));
+        msg.sendLang(player, "messages.entered", Map.of(
+                "%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L, rewardSeconds * 1_000L),
+                "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
+        ));
         zonePlayers.put(player, 0);
 
         Section section;
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
+            Reward exampleReward = rewards.peek();
+            double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
             bossBar = BossBar.create(
-                    StringUtils.format(section.getString("name").replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                    StringUtils.format(section.getString("name")
+                            .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
+                            .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
+                            .replace("%chance%", String.format("%.2f%%", chance))
+                    ),
                     1,
                     BossBar.Color.valueOf(section.getString("color").toUpperCase()),
                     BossBar.Style.parse(section.getString("style"))
@@ -118,7 +127,10 @@ public class Zone {
 
     private void leave(Player player, Iterator<Map.Entry<Player, Integer>> it) {
         if (player.isOnline())
-            msg.sendLang(player, "messages.left", Map.of("%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L)));
+            msg.sendLang(player, "messages.left", Map.of(
+                    "%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L, rewardSeconds * 1_000L),
+                    "%time-percent%", TimeUtils.fancyTimePercentage(zonePlayers.get(player) * 1_000L, rewardSeconds * 1_000L)
+            ));
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
@@ -128,9 +140,19 @@ public class Zone {
         String zoneTitle = settings.getString("in-zone.title", null);
         String zoneSubTitle = settings.getString("in-zone.subtitle", null);
         if (zoneTitle != null && !zoneTitle.isBlank() || zoneSubTitle != null && !zoneSubTitle.isBlank()) {
+            Reward exampleReward = rewards.peek();
+            double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
             Title title = Title.create(
-                    zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
-                    zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))),
+                    zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle
+                            .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
+                            .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
+                            .replace("%chance%", String.format("%.2f%%", chance))
+                    ),
+                    zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle
+                            .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
+                            .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
+                            .replace("%chance%", String.format("%.2f%%", chance))
+                    ),
                     0, 10, 0
             );
             title.send(player);
@@ -140,7 +162,13 @@ public class Zone {
     private void sendActionbar(Player player) {
         String zoneActionbar = settings.getString("in-zone.actionbar", null);
         if (zoneActionbar != null && !zoneActionbar.isBlank()) {
-            ActionBar.send(player, StringUtils.format(zoneActionbar.replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
+            Reward exampleReward = rewards.peek();
+            double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
+            ActionBar.send(player, StringUtils.format(zoneActionbar
+                    .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
+                    .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
+                    .replace("%chance%", String.format("%.2f%%", chance))
+            ));
         }
     }
 
@@ -156,12 +184,18 @@ public class Zone {
 
         Section section;
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
-            bossBar.title(StringUtils.format(section.getString("name").replace("%time%", TimeUtils.fancyTime(timeUntilNext(player)))));
+            Reward exampleReward = rewards.peek();
+            double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
+            bossBar.title(StringUtils.format(section.getString("name")
+                    .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
+                    .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
+                    .replace("%chance%", String.format("%.2f%%", chance))
+            ));
         }
     }
 
-    private void giveRewards(Player player, int newTime) {
-        final List<Reward> rewardList = rollAndGiveRewards(player);
+    private void handleRewards(Player player, int newTime) {
+        final List<Reward> rewardList = giveRewards(player);
         if (settings.getStringList("messages.reward").isEmpty()) return;
 
         final String prefix = CONFIG.getString("prefix");
@@ -174,11 +208,18 @@ public class Zone {
 
             if (string.contains("%reward%")) {
                 for (Reward reward : rewardList) {
-                    player.sendMessage(StringUtils.formatToString(string, Map.of("%reward%", reward.getDisplay(), "%time%", TimeUtils.fancyTime(newTime * 1_000L))));
+                    player.sendMessage(StringUtils.formatToString(string, Map.of(
+                            "%reward%", reward.getDisplay(),
+                            "%time%", TimeUtils.fancyTime(newTime * 1_000L, rewardSeconds * 1_000L),
+                            "%time-percent%", TimeUtils.fancyTimePercentage(newTime * 1_000L, rewardSeconds * 1_000L)
+                    )));
                 }
                 continue;
             }
-            player.sendMessage(StringUtils.formatToString(string, Map.of("%time%", TimeUtils.fancyTime(newTime * 1_000L))));
+            player.sendMessage(StringUtils.formatToString(string, Map.of(
+                    "%time%", TimeUtils.fancyTime(newTime * 1_000L, rewardSeconds * 1_000L),
+                    "%time-percent%", TimeUtils.fancyTimePercentage(newTime * 1_000L, rewardSeconds * 1_000L)
+            )));
         }
     }
 
@@ -188,18 +229,49 @@ public class Zone {
         return rewardSeconds * 1_000L - (time % rewardSeconds) * 1_000L;
     }
 
-    public List<Reward> rollAndGiveRewards(Player player) {
-        final List<Reward> rewardList = new ArrayList<>();
-        if (rewards.isEmpty()) return rewardList;
-        final HashMap<Reward, Double> chances = new HashMap<>();
-        for (Reward reward : rewards) {
-            chances.put(reward, reward.getChance());
+    private double getBonusForPlayer(Player player) {
+        if (bonusCache.containsKey(player)) {
+            return bonusCache.get(player);
         }
 
-        for (int i = 0; i < rollAmount; i++) {
-            Reward sel = RandomUtils.randomValue(chances);
-            rewardList.add(sel);
-            sel.run(player);
+        Section bonusSection = settings.getSection("bonus-permissions");
+        double highestBonus = 0.0;
+
+        if (bonusSection != null) {
+            for (String permission : bonusSection.getRoutesAsStrings(false)) {
+                if (player.hasPermission(permission)) {
+                    double bonus = settings.getDouble("bonus-permissions." + permission, 0.0);
+                    if (bonus > highestBonus) {
+                        highestBonus = bonus;
+                    }
+                }
+            }
+        }
+
+        bonusCache.put(player, highestBonus);
+        return highestBonus;
+    }
+
+    private double getPlayerChance(Player player, Reward reward) {
+        double baseChance = reward.getChance();
+        double bonus = getBonusForPlayer(player);
+        double finalChance = baseChance + bonus;
+        return Math.min(finalChance, 100.0);
+    }
+
+    public List<Reward> giveRewards(Player player) {
+        final List<Reward> rewardList = new ArrayList<>();
+        if (rewards.isEmpty()) return rewardList;
+
+        final double bonus = getBonusForPlayer(player);
+
+        for (Reward reward : rewards) {
+            double chance = reward.getChance() + bonus;
+            chance = Math.min(chance, 100.0);
+            if (RandomUtils.getChance(chance)) {
+                rewardList.add(reward);
+                reward.run(player);
+            }
         }
 
         return rewardList;
