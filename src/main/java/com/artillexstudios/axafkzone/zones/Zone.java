@@ -34,6 +34,8 @@ public class Zone {
     private final LinkedList<Reward> rewards = new LinkedList<>();
     private final Cooldown<Player> cooldown = new Cooldown<>();
     private final ConcurrentHashMap<Player, Double> bonusCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Player, Integer> originalViewDistance = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Player, Integer> originalSimulationDistance = new ConcurrentHashMap<>();
     private final MessageUtils msg;
     private final String name;
     private final Config settings;
@@ -101,6 +103,11 @@ public class Zone {
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
 
+        originalViewDistance.putIfAbsent(player, player.getViewDistance());
+        originalSimulationDistance.putIfAbsent(player, player.getSimulationDistance());
+        player.setViewDistance(CONFIG.getInt("min-view-distance", 2));
+        player.setSimulationDistance(CONFIG.getInt("min-simulation-distance", 2));
+
         msg.sendLang(player, "messages.entered", Map.of(
                 "%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L, rewardSeconds * 1_000L),
                 "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
@@ -132,6 +139,10 @@ public class Zone {
                     "%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L, rewardSeconds * 1_000L),
                     "%time-percent%", TimeUtils.fancyTimePercentage(zonePlayers.get(player) * 1_000L, rewardSeconds * 1_000L)
             ));
+        Integer view = originalViewDistance.remove(player);
+        if (view != null) player.setViewDistance(view);
+        Integer sim = originalSimulationDistance.remove(player);
+        if (sim != null) player.setSimulationDistance(sim);
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
@@ -300,9 +311,19 @@ public class Zone {
     }
 
     public void disable() {
+        for (Player player : zonePlayers.keySet()) {
+            Integer view = originalViewDistance.remove(player);
+            if (view != null) player.setViewDistance(view);
+            Integer sim = originalSimulationDistance.remove(player);
+            if (sim != null) player.setSimulationDistance(sim);
+        }
         for (BossBar bossBar : bossbars.values()) {
             bossBar.remove();
         }
+        zonePlayers.clear();
+        bossbars.clear();
+        originalViewDistance.clear();
+        originalSimulationDistance.clear();
     }
 
     public void setRegion(Region region) {
