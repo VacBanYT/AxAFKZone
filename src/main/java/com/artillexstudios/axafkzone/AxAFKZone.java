@@ -9,6 +9,7 @@ import com.artillexstudios.axafkzone.utils.NumberUtils;
 import com.artillexstudios.axafkzone.utils.UpdateNotifier;
 import com.artillexstudios.axafkzone.zones.Zone;
 import com.artillexstudios.axafkzone.zones.Zones;
+import com.artillexstudios.axafkzone.tracking.TrackingRangeManager;
 import com.artillexstudios.axapi.AxPlugin;
 import com.artillexstudios.axapi.config.Config;
 import com.artillexstudios.axapi.executor.ThreadedQueue;
@@ -51,6 +52,7 @@ public final class AxAFKZone extends AxPlugin {
 
         NumberUtils.reload();
         TickZones.start();
+        TrackingRangeManager.init(this);
 
         MESSAGEUTILS = new MessageUtils(LANG.getBackingDocument(), "prefix", CONFIG.getBackingDocument());
 
