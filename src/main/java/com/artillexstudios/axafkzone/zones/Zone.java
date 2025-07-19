@@ -4,6 +4,7 @@ import com.artillexstudios.axafkzone.reward.Reward;
 import com.artillexstudios.axafkzone.selection.Region;
 import com.artillexstudios.axafkzone.utils.RandomUtils;
 import com.artillexstudios.axafkzone.utils.TimeUtils;
+import com.artillexstudios.axafkzone.tracking.TrackingRangeManager;
 import com.artillexstudios.axapi.config.Config;
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.serializers.Serializers;
@@ -106,6 +107,7 @@ public class Zone {
                 "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
         ));
         zonePlayers.put(player, 0);
+        TrackingRangeManager.apply(player);
 
         Section section;
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
@@ -135,6 +137,7 @@ public class Zone {
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
+        TrackingRangeManager.reset(player);
     }
 
     private void sendTitle(Player player) {
