@@ -20,7 +20,6 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettin
 import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 
 import java.io.File;
@@ -31,7 +30,6 @@ public final class AxAFKZone extends AxPlugin {
     public static MessageUtils MESSAGEUTILS;
     private static AxPlugin instance;
     private static ThreadedQueue<Runnable> threadedQueue;
-    public static BukkitAudiences BUKKITAUDIENCES;
     private static AxMetrics metrics;
 
     public static ThreadedQueue<Runnable> getThreadedQueue() {
@@ -58,7 +56,6 @@ public final class AxAFKZone extends AxPlugin {
 
         threadedQueue = new ThreadedQueue<>("AxAFKZone-Datastore-thread");
 
-        BUKKITAUDIENCES = BukkitAudiences.create(this);
         Commands.registerCommand();
         FileUtils.loadAll();
 
@@ -71,8 +68,8 @@ public final class AxAFKZone extends AxPlugin {
         if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier(this, 6598);
     }
 
-    public void updateFlags(FeatureFlags flags) {
-        flags.USE_LEGACY_HEX_FORMATTER.set(true);
+    public void updateFlags() {
+        FeatureFlags.USE_LEGACY_HEX_FORMATTER.set(true);
     }
 
     public void disable() {

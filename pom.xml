@@ -1,12 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.artillexstudios</groupId>
     <artifactId>AxAFKZone</artifactId>
-    <version>1.6.3</version>
+    <version>1.7.2</version>
     <packaging>jar</packaging>
 
     <name>AxAFKZone</name>
@@ -58,10 +55,6 @@
                                 <relocation>
                                     <pattern>dev.triumphteam.gui</pattern>
                                     <shadedPattern>com.artillexstudios.axafkzone.libs.gui</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>net.kyori</pattern>
-                                    <shadedPattern>com.artillexstudios.axafkzone.libs.kyori</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>revxrsal.commands</pattern>
@@ -118,7 +111,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.671</version>
+            <version>1.4.732</version>
             <scope>compile</scope>
             <classifier>all</classifier>
         </dependency>

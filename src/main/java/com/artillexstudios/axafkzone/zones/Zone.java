@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -209,7 +210,7 @@ public class Zone {
             if (string.contains("%reward%")) {
                 for (Reward reward : rewardList) {
                     player.sendMessage(StringUtils.formatToString(string, Map.of(
-                            "%reward%", reward.getDisplay(),
+                            "%reward%", Optional.ofNullable(reward.getDisplay()).orElse("---"),
                             "%time%", TimeUtils.fancyTime(newTime * 1_000L, rewardSeconds * 1_000L),
                             "%time-percent%", TimeUtils.fancyTimePercentage(newTime * 1_000L, rewardSeconds * 1_000L)
                     )));
