@@ -31,6 +31,7 @@ import static com.artillexstudios.axafkzone.AxAFKZone.MESSAGEUTILS;
 public class Zone {
     private final ConcurrentHashMap<Player, Integer> zonePlayers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Player, BossBar> bossbars = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Player, Distances> distances = new ConcurrentHashMap<>();
     private final LinkedList<Reward> rewards = new LinkedList<>();
     private final Cooldown<Player> cooldown = new Cooldown<>();
     private final ConcurrentHashMap<Player, Double> bonusCache = new ConcurrentHashMap<>();
@@ -41,6 +42,39 @@ public class Zone {
     private int ticks = 0;
     private int rewardSeconds;
     private int rollAmount;
+
+    private record Distances(int view, int simulation) {
+    }
+
+    private static void setViewDistance(Player player, int distance) {
+        try {
+            player.getClass().getMethod("setViewDistance", int.class).invoke(player, distance);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static int getViewDistance(Player player) {
+        try {
+            return (int) player.getClass().getMethod("getViewDistance").invoke(player);
+        } catch (Exception ignored) {
+            return player.getServer().getViewDistance();
+        }
+    }
+
+    private static void setSimulationDistance(Player player, int distance) {
+        try {
+            player.getClass().getMethod("setSimulationDistance", int.class).invoke(player, distance);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static int getSimulationDistance(Player player) {
+        try {
+            return (int) player.getClass().getMethod("getSimulationDistance").invoke(player);
+        } catch (Exception ignored) {
+            return player.getServer().getSimulationDistance();
+        }
+    }
 
     public Zone(String name, Config settings) {
         this.name = name;
@@ -101,6 +135,10 @@ public class Zone {
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
 
+        distances.put(player, new Distances(getViewDistance(player), getSimulationDistance(player)));
+        setViewDistance(player, 2);
+        setSimulationDistance(player, 2);
+
         msg.sendLang(player, "messages.entered", Map.of(
                 "%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L, rewardSeconds * 1_000L),
                 "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
@@ -135,6 +173,11 @@ public class Zone {
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
+        Distances dist = distances.remove(player);
+        if (dist != null) {
+            setViewDistance(player, dist.view());
+            setSimulationDistance(player, dist.simulation());
+        }
     }
 
     private void sendTitle(Player player) {
@@ -303,6 +346,15 @@ public class Zone {
         for (BossBar bossBar : bossbars.values()) {
             bossBar.remove();
         }
+        for (Map.Entry<Player, Distances> entry : distances.entrySet()) {
+            Player player = entry.getKey();
+            Distances dist = entry.getValue();
+            if (player.isOnline()) {
+                setViewDistance(player, dist.view());
+                setSimulationDistance(player, dist.simulation());
+            }
+        }
+        distances.clear();
     }
 
     public void setRegion(Region region) {
