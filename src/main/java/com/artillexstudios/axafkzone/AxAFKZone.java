@@ -7,6 +7,7 @@ import com.artillexstudios.axafkzone.schedulers.TickZones;
 import com.artillexstudios.axafkzone.utils.FileUtils;
 import com.artillexstudios.axafkzone.utils.NumberUtils;
 import com.artillexstudios.axafkzone.utils.UpdateNotifier;
+import com.artillexstudios.axafkzone.listeners.TrackingRangeListener;
 import com.artillexstudios.axafkzone.zones.Zone;
 import com.artillexstudios.axafkzone.zones.Zones;
 import com.artillexstudios.axapi.AxPlugin;
@@ -58,6 +59,8 @@ public final class AxAFKZone extends AxPlugin {
 
         Commands.registerCommand();
         FileUtils.loadAll();
+
+        TrackingRangeListener.init(this);
 
         getServer().getPluginManager().registerEvents(new WandListeners(), this);
         getServer().getPluginManager().registerEvents(new WorldListeners(), this);
