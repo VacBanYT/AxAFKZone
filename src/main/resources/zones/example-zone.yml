@@ -41,13 +41,7 @@ rewards:
       - amount: 1
         material: diamond
 
-bonus-permissions:
-  afkzone-bonus-5: 5.0
-  afkzone-bonus-10: 10.0
-  afkzone-bonus-20: 20.0
-  afkzone-bonus-30: 30.0
-  afkzone-bonus-40: 40.0
-  afkzone-bonus-50: 50.0
+# Grant permissions like "afkzone-bonus-5" to increase reward chances
 
 zone:
   location1: "IF YOU SEE THIS, SOMETHING HAS GONE REALLY REALLY WRONG"

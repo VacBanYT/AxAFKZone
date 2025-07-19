@@ -15,6 +15,7 @@ import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.Title;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -134,6 +135,12 @@ public class Zone {
     private void enter(Player player) {
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
+
+        // Clear cached bonus so permission changes are accounted for on every entry
+        bonusCache.remove(player);
+
+        // Recalculate the bonus value for this player before any messages are sent
+        getBonusForPlayer(player);
 
         distances.put(player, new Distances(getViewDistance(player), getSimulationDistance(player)));
         setViewDistance(player, 2);
@@ -278,17 +285,18 @@ public class Zone {
             return bonusCache.get(player);
         }
 
-        Section bonusSection = settings.getSection("bonus-permissions");
         double highestBonus = 0.0;
 
-        if (bonusSection != null) {
-            for (String permission : bonusSection.getRoutesAsStrings(false)) {
-                if (player.hasPermission(permission)) {
-                    double bonus = settings.getDouble("bonus-permissions." + permission, 0.0);
-                    if (bonus > highestBonus) {
-                        highestBonus = bonus;
-                    }
+        for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
+            String perm = info.getPermission();
+            if (!perm.startsWith("afkzone-bonus-")) continue;
+            String value = perm.substring("afkzone-bonus-".length());
+            try {
+                double bonus = Double.parseDouble(value);
+                if (bonus > highestBonus) {
+                    highestBonus = bonus;
                 }
+            } catch (NumberFormatException ignored) {
             }
         }
 
