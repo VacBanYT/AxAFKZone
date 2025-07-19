@@ -15,6 +15,7 @@ import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.Title;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import com.artillexstudios.axafkzone.tracking.TrackingRangeManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -106,6 +107,7 @@ public class Zone {
                 "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
         ));
         zonePlayers.put(player, 0);
+        TrackingRangeManager.applyAfkRange(player, 1);
 
         Section section;
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
@@ -135,6 +137,7 @@ public class Zone {
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
+        TrackingRangeManager.restoreRange(player);
     }
 
     private void sendTitle(Player player) {
@@ -303,6 +306,7 @@ public class Zone {
         for (BossBar bossBar : bossbars.values()) {
             bossBar.remove();
         }
+        zonePlayers.keySet().forEach(TrackingRangeManager::restoreRange);
     }
 
     public void setRegion(Region region) {
