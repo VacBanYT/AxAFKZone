@@ -15,6 +15,7 @@ import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.Title;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import com.artillexstudios.axafkzone.listeners.TrackingRangeListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -107,6 +108,8 @@ public class Zone {
         ));
         zonePlayers.put(player, 0);
 
+        TrackingRangeListener.add(player);
+
         Section section;
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
             Reward exampleReward = rewards.peek();
@@ -135,6 +138,7 @@ public class Zone {
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
+        TrackingRangeListener.remove(player);
     }
 
     private void sendTitle(Player player) {
