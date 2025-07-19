@@ -21,6 +21,12 @@ reset-after-reward: true
 # set to -1 for unlimited
 zone-per-ip-limit: -1
 
+# minimum view distance for players in an AFK zone
+min-view-distance: 2
+
+# minimum simulation distance for players in an AFK zone
+min-simulation-distance: 2
+
 # should the bossbar progress start from full or empty?
 # directions:
 # 0 - decreasing value (starts filled)
@@ -35,4 +41,4 @@ update-notifier:
   on-join: true
 
 # do not change this
-version: 2
+version: 3
