@@ -14,7 +14,9 @@ import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.Title;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import java.lang.reflect.Method;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,6 +36,7 @@ public class Zone {
     private final LinkedList<Reward> rewards = new LinkedList<>();
     private final Cooldown<Player> cooldown = new Cooldown<>();
     private final ConcurrentHashMap<Player, Double> bonusCache = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Player, Integer> originalTracking = new ConcurrentHashMap<>();
     private final MessageUtils msg;
     private final String name;
     private final Config settings;
@@ -41,6 +44,29 @@ public class Zone {
     private int ticks = 0;
     private int rewardSeconds;
     private int rollAmount;
+
+    private int getTrackingRange(Player player) {
+        try {
+            Method m = player.getClass().getMethod("getEntityTrackingRange");
+            Object ret = m.invoke(player);
+            if (ret instanceof Integer i) return i;
+        } catch (ReflectiveOperationException ignored) {
+        }
+        return Bukkit.getViewDistance();
+    }
+
+    private void setTrackingRange(Player player, int range) {
+        try {
+            Method m = player.getClass().getMethod("setEntityTrackingRange", int.class);
+            m.invoke(player, range);
+        } catch (ReflectiveOperationException ignored) {
+            try {
+                Method vm = player.getClass().getMethod("setViewDistance", int.class);
+                vm.invoke(player, range);
+            } catch (ReflectiveOperationException ignored2) {
+            }
+        }
+    }
 
     public Zone(String name, Config settings) {
         this.name = name;
@@ -101,6 +127,9 @@ public class Zone {
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
 
+        originalTracking.put(player, getTrackingRange(player));
+        setTrackingRange(player, 1);
+
         msg.sendLang(player, "messages.entered", Map.of(
                 "%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L, rewardSeconds * 1_000L),
                 "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
@@ -135,6 +164,13 @@ public class Zone {
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
+
+        Integer original = originalTracking.remove(player);
+        if (original != null) {
+            setTrackingRange(player, original);
+        } else {
+            setTrackingRange(player, Bukkit.getViewDistance());
+        }
     }
 
     private void sendTitle(Player player) {
