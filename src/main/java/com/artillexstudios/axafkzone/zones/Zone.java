@@ -182,8 +182,31 @@ public class Zone {
         if (bossBar != null) bossBar.remove();
         Distances dist = distances.remove(player);
         if (dist != null) {
-            setViewDistance(player, dist.view());
-            setSimulationDistance(player, dist.simulation());
+            setViewDistance(player, player.getServer().getViewDistance());
+            setSimulationDistance(player, player.getServer().getSimulationDistance());
+        }
+    }
+
+    public boolean hasPlayer(Player player) {
+        return zonePlayers.containsKey(player);
+    }
+
+    public void forceLeave(Player player) {
+        Integer time = zonePlayers.remove(player);
+        if (time == null) return;
+
+        if (player.isOnline())
+            msg.sendLang(player, "messages.left", Map.of(
+                    "%time%", TimeUtils.fancyTime(time * 1_000L, rewardSeconds * 1_000L),
+                    "%time-percent%", TimeUtils.fancyTimePercentage(time * 1_000L, rewardSeconds * 1_000L)
+            ));
+
+        BossBar bossBar = bossbars.remove(player);
+        if (bossBar != null) bossBar.remove();
+        Distances dist = distances.remove(player);
+        if (dist != null) {
+            setViewDistance(player, player.getServer().getViewDistance());
+            setSimulationDistance(player, player.getServer().getSimulationDistance());
         }
     }
 
@@ -358,8 +381,8 @@ public class Zone {
             Player player = entry.getKey();
             Distances dist = entry.getValue();
             if (player.isOnline()) {
-                setViewDistance(player, dist.view());
-                setSimulationDistance(player, dist.simulation());
+                setViewDistance(player, player.getServer().getViewDistance());
+                setSimulationDistance(player, player.getServer().getSimulationDistance());
             }
         }
         distances.clear();

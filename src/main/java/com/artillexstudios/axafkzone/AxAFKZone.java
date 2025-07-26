@@ -3,6 +3,7 @@ package com.artillexstudios.axafkzone;
 import com.artillexstudios.axafkzone.commands.Commands;
 import com.artillexstudios.axafkzone.listeners.WandListeners;
 import com.artillexstudios.axafkzone.listeners.WorldListeners;
+import com.artillexstudios.axafkzone.listeners.PlayerListeners;
 import com.artillexstudios.axafkzone.schedulers.TickZones;
 import com.artillexstudios.axafkzone.utils.FileUtils;
 import com.artillexstudios.axafkzone.utils.NumberUtils;
@@ -61,6 +62,7 @@ public final class AxAFKZone extends AxPlugin {
 
         getServer().getPluginManager().registerEvents(new WandListeners(), this);
         getServer().getPluginManager().registerEvents(new WorldListeners(), this);
+        getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
 
         metrics = new AxMetrics(this, 9);
         metrics.start();
