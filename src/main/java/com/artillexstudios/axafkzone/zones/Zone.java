@@ -150,6 +150,16 @@ public class Zone {
                 "%time%", TimeUtils.fancyTime(rewardSeconds * 1_000L, rewardSeconds * 1_000L),
                 "%time-percent%", TimeUtils.fancyTimePercentage(rewardSeconds * 1_000L, rewardSeconds * 1_000L)
         ));
+        String enterSoundName = CONFIG.getString("sounds.enter", "ENTITY_FIREWORK_ROCKET_TWINKLE");
+        try {
+            player.playSound(player.getLocation(), org.bukkit.Sound.valueOf(enterSoundName), 0.4f, 3f);
+        } catch (IllegalArgumentException ignored) {
+        }
+        String enterParticle = CONFIG.getString("effects.enter", "POOF");
+        try {
+            player.getWorld().spawnParticle(org.bukkit.Particle.valueOf(enterParticle), player.getLocation(), 10, 0.3, 0.5, 0.3, 0);
+        } catch (IllegalArgumentException ignored) {
+        }
         zonePlayers.put(player, 0);
 
         Section section;
@@ -172,11 +182,22 @@ public class Zone {
     }
 
     private void leave(Player player, Iterator<Map.Entry<Player, Integer>> it) {
-        if (player.isOnline())
+        if (player.isOnline()) {
             msg.sendLang(player, "messages.left", Map.of(
                     "%time%", TimeUtils.fancyTime(zonePlayers.get(player) * 1_000L, rewardSeconds * 1_000L),
                     "%time-percent%", TimeUtils.fancyTimePercentage(zonePlayers.get(player) * 1_000L, rewardSeconds * 1_000L)
             ));
+            String leaveSoundName = CONFIG.getString("sounds.leave", "ENTITY_FIREWORK_ROCKET_TWINKLE");
+            try {
+                player.playSound(player.getLocation(), org.bukkit.Sound.valueOf(leaveSoundName), 0.4f, 3f);
+            } catch (IllegalArgumentException ignored) {
+            }
+            String leaveParticle = CONFIG.getString("effects.leave", "POOF");
+            try {
+                player.getWorld().spawnParticle(org.bukkit.Particle.valueOf(leaveParticle), player.getLocation(), 10, 0.3, 0.5, 0.3, 0);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
         it.remove();
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
@@ -195,11 +216,22 @@ public class Zone {
         Integer time = zonePlayers.remove(player);
         if (time == null) return;
 
-        if (player.isOnline())
+        if (player.isOnline()) {
             msg.sendLang(player, "messages.left", Map.of(
                     "%time%", TimeUtils.fancyTime(time * 1_000L, rewardSeconds * 1_000L),
                     "%time-percent%", TimeUtils.fancyTimePercentage(time * 1_000L, rewardSeconds * 1_000L)
             ));
+            String leaveSoundName = CONFIG.getString("sounds.leave", "ENTITY_FIREWORK_ROCKET_TWINKLE");
+            try {
+                player.playSound(player.getLocation(), org.bukkit.Sound.valueOf(leaveSoundName), 0.4f, 3f);
+            } catch (IllegalArgumentException ignored) {
+            }
+            String leaveParticle = CONFIG.getString("effects.leave", "POOF");
+            try {
+                player.getWorld().spawnParticle(org.bukkit.Particle.valueOf(leaveParticle), player.getLocation(), 10, 0.3, 0.5, 0.3, 0);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
 
         BossBar bossBar = bossbars.remove(player);
         if (bossBar != null) bossBar.remove();
@@ -270,6 +302,13 @@ public class Zone {
 
     private void handleRewards(Player player, int newTime) {
         final List<Reward> rewardList = giveRewards(player);
+        if (!rewardList.isEmpty()) {
+            String rewardSoundName = CONFIG.getString("sounds.reward", "ENTITY_VILLAGER_TRADE");
+            try {
+                player.playSound(player.getLocation(), org.bukkit.Sound.valueOf(rewardSoundName), 0.4f, 2f);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
         if (settings.getStringList("messages.reward").isEmpty()) return;
 
         final String prefix = CONFIG.getString("prefix");

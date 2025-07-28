@@ -21,6 +21,17 @@ reset-after-reward: true
 # set to -1 for unlimited
 zone-per-ip-limit: -1
 
+# sounds played on various events
+sounds:
+  enter: "ENTITY_FIREWORK_ROCKET_TWINKLE"
+  leave: "ENTITY_FIREWORK_ROCKET_TWINKLE"
+  reward: "ENTITY_VILLAGER_TRADE"
+
+# particles spawned on events
+effects:
+  enter: "POOF"
+  leave: "POOF"
+
 # should the bossbar progress start from full or empty?
 # directions:
 # 0 - decreasing value (starts filled)
