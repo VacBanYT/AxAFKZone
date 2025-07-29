@@ -348,22 +348,31 @@ public class Zone {
         }
 
         double highestBonus = 0.0;
+        double personalBonus = 0.0;
 
         for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
             String perm = info.getPermission();
-            if (!perm.startsWith("afkzone-bonus-")) continue;
-            String value = perm.substring("afkzone-bonus-".length());
-            try {
-                double bonus = Double.parseDouble(value);
-                if (bonus > highestBonus) {
-                    highestBonus = bonus;
+            if (perm.startsWith("afkzone-bonus-")) {
+                String value = perm.substring("afkzone-bonus-".length());
+                try {
+                    double bonus = Double.parseDouble(value);
+                    if (bonus > highestBonus) {
+                        highestBonus = bonus;
+                    }
+                } catch (NumberFormatException ignored) {
                 }
-            } catch (NumberFormatException ignored) {
+            } else if (perm.startsWith("afkzone-personal-bonus-")) {
+                String value = perm.substring("afkzone-personal-bonus-".length());
+                try {
+                    personalBonus += Double.parseDouble(value);
+                } catch (NumberFormatException ignored) {
+                }
             }
         }
 
-        bonusCache.put(player, highestBonus);
-        return highestBonus;
+        double totalBonus = highestBonus + personalBonus;
+        bonusCache.put(player, totalBonus);
+        return totalBonus;
     }
 
     private double getPlayerChance(Player player, Reward reward) {

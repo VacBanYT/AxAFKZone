@@ -42,6 +42,7 @@ rewards:
         material: diamond
 
 # Grant permissions like "afkzone-bonus-5" to increase reward chances
+# "afkzone-personal-bonus-*" can stack with the group bonus
 
 zone:
   location1: "IF YOU SEE THIS, SOMETHING HAS GONE REALLY REALLY WRONG"
