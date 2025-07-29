@@ -4,6 +4,7 @@ import com.artillexstudios.axafkzone.reward.Reward;
 import com.artillexstudios.axafkzone.selection.Region;
 import com.artillexstudios.axafkzone.utils.RandomUtils;
 import com.artillexstudios.axafkzone.utils.TimeUtils;
+import com.artillexstudios.axafkzone.utils.PlaceholderUtils;
 import com.artillexstudios.axapi.config.Config;
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import com.artillexstudios.axapi.serializers.Serializers;
@@ -249,16 +250,16 @@ public class Zone {
             Reward exampleReward = rewards.peek();
             double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
             Title title = Title.create(
-                    zoneTitle == null ? Component.empty() : StringUtils.format(zoneTitle
+                    zoneTitle == null ? Component.empty() : StringUtils.format(PlaceholderUtils.applyPlaceholders(player, zoneTitle
                             .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
                             .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
                             .replace("%chance%", String.format("%.2f%%", chance))
-                    ),
-                    zoneSubTitle == null ? Component.empty() : StringUtils.format(zoneSubTitle
+                    )),
+                    zoneSubTitle == null ? Component.empty() : StringUtils.format(PlaceholderUtils.applyPlaceholders(player, zoneSubTitle
                             .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
                             .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
                             .replace("%chance%", String.format("%.2f%%", chance))
-                    ),
+                    )),
                     0, 10, 0
             );
             title.send(player);
@@ -270,11 +271,11 @@ public class Zone {
         if (zoneActionbar != null && !zoneActionbar.isBlank()) {
             Reward exampleReward = rewards.peek();
             double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
-            ActionBar.send(player, StringUtils.format(zoneActionbar
+            ActionBar.send(player, StringUtils.format(PlaceholderUtils.applyPlaceholders(player, zoneActionbar
                     .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
                     .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
                     .replace("%chance%", String.format("%.2f%%", chance))
-            ));
+            )));
         }
     }
 
@@ -292,11 +293,11 @@ public class Zone {
         if ((section = settings.getSection("in-zone.bossbar")) != null) {
             Reward exampleReward = rewards.peek();
             double chance = exampleReward == null ? 0.0 : getPlayerChance(player, exampleReward);
-            bossBar.title(StringUtils.format(section.getString("name")
+            bossBar.title(StringUtils.format(PlaceholderUtils.applyPlaceholders(player, section.getString("name")
                     .replace("%time%", TimeUtils.fancyTime(timeUntilNext(player), rewardSeconds * 1_000L))
                     .replace("%time-percent%", TimeUtils.fancyTimePercentage(timeUntilNext(player), rewardSeconds * 1_000L))
                     .replace("%chance%", String.format("%.2f%%", chance))
-            ));
+            )));
         }
     }
 
@@ -321,18 +322,20 @@ public class Zone {
 
             if (string.contains("%reward%")) {
                 for (Reward reward : rewardList) {
-                    player.sendMessage(StringUtils.formatToString(string, Map.of(
+                    String msgStr = StringUtils.formatToString(string, Map.of(
                             "%reward%", Optional.ofNullable(reward.getDisplay()).orElse("---"),
                             "%time%", TimeUtils.fancyTime(newTime * 1_000L, rewardSeconds * 1_000L),
                             "%time-percent%", TimeUtils.fancyTimePercentage(newTime * 1_000L, rewardSeconds * 1_000L)
-                    )));
+                    ));
+                    player.sendMessage(PlaceholderUtils.applyPlaceholders(player, msgStr));
                 }
                 continue;
             }
-            player.sendMessage(StringUtils.formatToString(string, Map.of(
+            String msgStr = StringUtils.formatToString(string, Map.of(
                     "%time%", TimeUtils.fancyTime(newTime * 1_000L, rewardSeconds * 1_000L),
                     "%time-percent%", TimeUtils.fancyTimePercentage(newTime * 1_000L, rewardSeconds * 1_000L)
-            )));
+            ));
+            player.sendMessage(PlaceholderUtils.applyPlaceholders(player, msgStr));
         }
     }
 

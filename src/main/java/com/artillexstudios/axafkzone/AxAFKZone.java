@@ -4,6 +4,7 @@ import com.artillexstudios.axafkzone.commands.Commands;
 import com.artillexstudios.axafkzone.listeners.WandListeners;
 import com.artillexstudios.axafkzone.listeners.WorldListeners;
 import com.artillexstudios.axafkzone.listeners.PlayerListeners;
+import com.artillexstudios.axafkzone.placeholder.ZoneExpansion;
 import com.artillexstudios.axafkzone.schedulers.TickZones;
 import com.artillexstudios.axafkzone.utils.FileUtils;
 import com.artillexstudios.axafkzone.utils.NumberUtils;
@@ -22,6 +23,7 @@ import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 
@@ -54,6 +56,10 @@ public final class AxAFKZone extends AxPlugin {
         TickZones.start();
 
         MESSAGEUTILS = new MessageUtils(LANG.getBackingDocument(), "prefix", CONFIG.getBackingDocument());
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new ZoneExpansion().register();
+        }
 
         threadedQueue = new ThreadedQueue<>("AxAFKZone-Datastore-thread");
 
